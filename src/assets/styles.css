@@ -1,0 +1,902 @@
+/* 
+   Written mobile first. Everything above the media queries is
+   the phone layout; the two breakpoints at the bottom only
+   declare what actually changes.
+
+   Brand from Task 1.1P
+   #2A2E35  graphite   text, header, footer
+   #F4F1EC  off-white  alternating bands
+   #E63946  signal red one accent only, reserved for actions
+
+   Vue build (Task 9.3D): this is the one global stylesheet, imported
+   once in main.js, so every component shares the same rules.
+*/
+
+
+/* --- Reset ---- */
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;   /* padding counts inside a declared width, otherwise every % width overflows once padding is added to it */
+}
+
+
+/* --- Typography --- */
+
+body {
+    font-family: "Roboto", Arial, sans-serif;
+    font-size: 1rem;
+    line-height: 1.65;
+    color: #2A2E35;
+    background: #FFFFFF;
+}
+
+h1, h2, h3 {
+    font-family: "Oswald", Arial, sans-serif;
+    line-height: 1.15;
+}
+
+/* Both headings scale with the viewport rather than jumping at a
+   breakpoint. clamp() is used instead of a font-size inside each
+   media query because the awkward widths are between the
+   breakpoints, not at them. A 900px tablet got a heading sized
+   for a phone. */
+h1 {
+    font-size: clamp(1.9rem, 5vw, 3rem);
+    font-weight: 600;
+    margin-bottom: 1rem;
+}
+
+h2 {
+    font-size: clamp(1.4rem, 3vw, 1.9rem);
+    font-weight: 600;
+    margin-bottom: 0.75rem;
+}
+
+h3 {
+    font-size: 1.15rem;
+    font-weight: 500;
+    margin-bottom: 0.4rem;
+}
+
+p {
+    margin-bottom: 1rem;
+}
+
+/* Sits above an h1 as a quiet label. Small and uppercase so it
+   reads as orientation, not as a competing headline. Lightened from
+   the brand red: at 0.8rem the darker #E63946 measures 4.4:1 on
+   graphite, just under the 4.5:1 WCAG AA floor for small text. */
+.kicker {
+    font-family: "Oswald", Arial, sans-serif;
+    font-size: 0.8rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: #F26D77;
+    margin-bottom: 0.5rem;
+}
+
+/* One step up from body text, used for the opening sentence of a
+   page so the eye has an obvious entry point after the heading. */
+.lead {
+    font-size: 1.1rem;
+}
+
+.section-intro {
+    max-width: 42rem;   /* intro paragraphs are the longest lines on the
+                           page, so they get a tighter cap than the grid
+                           beneath them */
+    color: #4A4F58;
+}
+
+
+/* --- Images -- */
+
+img {
+    max-width: 100%;    /* max-width rather than width, so a photo smaller
+                           than its slot is never stretched past its real
+                           pixel size and blurred */
+    height: auto;       /* recalculated from the new width, which is what
+                           keeps the aspect ratio */
+    display: block;     /* images are inline by default and sit on the text
+                           baseline, leaving a 4px gap under every one */
+}
+
+
+/* --- Layout container ----- */
+
+/* Percentage width gives the gutter on small screens; the rem
+   max-width stops lines running to 1900px on a wide monitor,
+   where they become hard to track back to the next line. */
+.container {
+    width: 90%;
+    max-width: 64rem;
+    margin: 0 auto;
+}
+
+
+/* --- Header and navigation --- */
+
+.site-header {
+    background: #E63946;
+    padding: 1rem 0;
+}
+
+.header-inner {
+    display: flex;
+    flex-direction: column;   /* logo above the menu while the screen is
+                                 too narrow to hold both on one line */
+    gap: 0.75rem;
+}
+
+.logo {
+    font-family: "Oswald", Arial, sans-serif;
+    font-size: 1.5rem;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+    color: #F4F1EC;
+    text-decoration: none;
+}
+
+/* Wrapping rather than stacking: stacked links pushed the hero
+   heading below the fold on a 390px screen. Wrapped they take one or
+   two lines and the page still opens on its headline. */
+.nav {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem 1.5rem;
+}
+
+.nav a {
+    color: #F4F1EC;
+    text-decoration: none;
+    padding: 0.25rem 0;
+    border-bottom: 2px solid transparent;   /* reserved now so the link does
+                                               not shift when .active adds
+                                               the real border */
+}
+
+.nav a:hover {
+    border-bottom-color: #2A2E35;
+}
+
+/* The current page is marked in the nav because the three pages
+   share a layout and are otherwise hard to tell apart at a glance.
+   AppHeader.vue adds the class with a :class binding, comparing each
+   link against the currentView prop it receives from App.vue. */
+.nav a.active {
+    border-bottom-color: #2A2E35;
+}
+
+
+/* --- Sections and bands --- */
+
+.section {
+    padding: 2.5rem 0;
+}
+
+/* Alternating background is the only thing separating one section
+   from the next. There are no divider lines, so the rhythm has to come
+   from the colour change plus the vertical padding. */
+.band {
+    background: #F4F1EC;
+}
+
+/* The photo moved out of an <img> and into the background. Once it sits
+   behind text and gets darkened it is decoration, not content, and an alt
+   description would only add noise, since the h1 already says what the
+   business does. Layer order is the trap: the FIRST layer listed paints on TOP, so
+   the gradient goes above the url(), not below it. Graphite rather than
+   pure black, because black over this blue-cast photo goes muddy grey. */
+.hero-section {
+    background-image: linear-gradient(rgba(42, 46, 53, 0.82), rgba(42, 46, 53, 0.82)), url("images/hero-handshake.jpg");
+    background-size: cover;        /* fills the box and crops the spill; contain would letterbox it instead */
+    background-position: center;   /* default is top left, which cropped the faces off on narrow screens */
+    background-repeat: no-repeat;
+    color: #F4F1EC;              /* h1 and .lead inherit this. .kicker and .phone keep their own red, which reads better on dark than it did on white */
+}
+
+/* --- Hero ---- */
+
+/* min-height rather than height, so a longer headline pushes the section
+   taller instead of overflowing it. Header height measured in DevTools
+   (Computed > height): 71.6px above 768px, taller below it where the logo
+   and nav stack. The extra 6rem is deliberate: a hero that fills the
+   screen exactly gives no signal that anything follows it.
+
+   Two declarations, not one: a browser that does not know svh throws the
+   second away and keeps the vh fallback. vh alone is measured with the
+   mobile address bar hidden, so a full-height hero overflows on load. */
+.hero {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 1.5rem;
+    min-height: calc(100vh - 112px - 6rem);
+    min-height: calc(100svh - 112px - 6rem);
+}
+
+/* The photo used to take half the row. With it gone the text would run
+   the full 64rem container, straight across both faces. */
+.hero-text {
+    max-width: 30rem;
+}
+
+.phone {
+    display: inline-block;
+    font-family: "Oswald", Arial, sans-serif;
+    font-size: 1.75rem;
+    font-weight: 600;
+    color: #E63946;
+    text-decoration: none;
+}
+
+/* A real tel: link, not plain text, because the persona most likely
+   to be on a phone is the one mid-breakdown, and he should be able to tap
+   the number rather than memorise it. */
+.phone:hover,
+.phone-inline:hover {
+    text-decoration: underline;
+}
+
+.phone-inline {
+    font-weight: 500;
+    color: #E63946;
+    white-space: nowrap;   /* stops the number breaking across two lines
+                              mid-digits on a narrow screen */
+}
+
+
+/* --- Two-column split (text beside image, or text beside text) --- */
+
+.split {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+
+/* --- Cards --- */
+
+.cards {
+    display: grid;
+    grid-template-columns: 1fr;   /* single column is the phone default;
+                                     the breakpoints add columns */
+    gap: 1.5rem;
+    margin-bottom: 1.5rem;
+}
+
+.card {
+    display: flex;
+    flex-direction: column;
+    background: #FFFFFF;
+    border: 1px solid #D8D3CB;
+}
+
+/* The three photos arrived in three different shapes, which started
+   the card text at three different heights. A fixed ratio with
+   object-fit: cover crops them to match instead of stretching them. */
+.card img {
+    width: 100%;
+    aspect-ratio: 3 / 2;
+    object-fit: cover;
+}
+
+.card-text {
+    padding: 1.15rem;
+}
+
+.card p {
+    margin-bottom: 0;   /* the card padding already supplies the gap, so the
+                           inherited paragraph margin would double it */
+}
+
+/* Text-only cards on the services page have no photo to anchor them,
+   so a red edge does the work the image does elsewhere. */
+.card-plain {
+    border-left: 4px solid #E63946;
+}
+
+
+/* --- Three short points --- */
+
+.points {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+}
+
+.point p {
+    margin-bottom: 0;
+    color: #4A4F58;
+}
+
+
+/* --- Numbered booking steps --- */
+
+.steps {
+    margin: 0 0 1rem 1.15rem;
+}
+
+.steps li {
+    margin-bottom: 0.75rem;
+    padding-left: 0.25rem;
+}
+
+
+/* --- Responsive table ----- */
+
+/* Horizontal scroll was chosen over stacking each row into a block.
+   The whole point of this table is reading across a row to compare a
+   small-car price against a 4WD price, and stacking destroys exactly
+   that comparison. The wrapper scrolls; the page does not. */
+.table-wrapper {
+    width: 100%;
+    overflow-x: auto;
+    border: 1px solid #D8D3CB;
+    background: #FFFFFF;
+}
+
+.table-wrapper:focus-visible {
+    outline: 3px solid #E63946;   /* the wrapper is keyboard focusable so it
+                                     can be scrolled without a mouse */
+    outline-offset: 2px;
+}
+
+table {
+    width: 100%;
+    min-width: 42rem;   /* the floor that keeps six columns legible. Without
+                           it the browser squeezes them into 390px and
+                           "Pre-purchase inspection" wraps onto four lines */
+    border-collapse: collapse;
+}
+
+caption {
+    caption-side: top;
+    text-align: left;
+    font-family: "Oswald", Arial, sans-serif;
+    font-size: 1rem;
+    padding: 0.75rem 0.85rem;
+    border-bottom: 2px solid #E63946;
+}
+
+th,
+td {
+    padding: 0.7rem 0.85rem;
+    text-align: left;
+    border-bottom: 1px solid #D8D3CB;
+}
+
+thead th {
+    background: #2A2E35;
+    color: #F4F1EC;
+    font-family: "Oswald", Arial, sans-serif;
+    font-weight: 500;
+}
+
+/* The first cell of each row is a th, not a td, so a screen reader
+   announces the job name when reading any price in that row. */
+tbody th {
+    font-weight: 500;
+}
+
+/* Striping matters more here than on a narrow table: once the reader
+   is scrolling sideways, the stripe is what keeps their eye on the
+   correct row. */
+tbody tr:nth-child(even) {
+    background: #FAF8F5;
+}
+
+.table-note {
+    font-size: 0.875rem;
+    color: #6B6F77;
+    margin-top: 0.75rem;
+}
+
+
+/* --- Booking form --------- */
+
+/* The grid sits on each <fieldset>, not on the <form>. A grid only lays
+   out its own direct children, and the fields are now nested one level
+   deeper inside the fieldsets. On the form it would have arranged the
+   two fieldsets and left everything inside them untouched. */
+.booking-form {
+    display: grid;
+    gap: 2rem;
+}
+
+.field-group {
+    display: grid;
+    grid-template-columns: 1fr;   /* one field per row on a phone; two-up
+                                     fields would leave each about 160px,
+                                     too narrow for a rego or a car model */
+    gap: 1.25rem;
+    border: 1px solid #D8D3CB;
+    padding: 1.25rem;
+    background: #FFFFFF;
+}
+
+/* Child combinator, not a descendant selector: the radio buttons live in
+   a nested fieldset with its own legend, and a plain "legend" rule would
+   dress that one up as a section heading too. */
+.field-group > legend {
+    font-family: "Oswald", Arial, sans-serif;
+    font-size: 1.05rem;
+    font-weight: 500;
+    padding: 0 0.5rem;
+}
+
+.field label {
+    display: block;   /* label above the input rather than beside it, so the
+                         field can use the full width on a phone */
+    font-weight: 500;
+    margin-bottom: 0.3rem;
+}
+
+.field input,
+.field select,
+.field textarea {
+    width: 100%;
+    padding: 0.65rem 0.75rem;
+    border: 1px solid #C9C3B9;
+    background: #FFFFFF;
+    font: inherit;   /* form controls do not inherit the body font, so
+                        without this the inputs fall back to the browser
+                        default and stop matching the rest of the page */
+}
+
+.field textarea {
+    resize: vertical;   /* horizontal resize would let the user drag the box
+                           wider than the layout */
+}
+
+.field input:focus-visible,
+.field select:focus-visible,
+.field textarea:focus-visible {
+    outline: 3px solid #E63946;
+    outline-offset: 1px;
+}
+
+/* 6.3D marked bad fields with :user-invalid and 8.4D moved to a class
+   set from plain JavaScript. The Vue form keeps the class: ContactForm.vue
+   binds it with :class whenever that field has an error, so the red box
+   and the message under it always come from the same errors object. */
+.field input.is-invalid,
+.field select.is-invalid,
+.field textarea.is-invalid {
+    border-color: #E63946;
+    background: #FDF3F4;
+}
+
+/* The message under each field. It only exists while that field has an
+   error (v-if in ContactForm.vue), so no empty row is reserved for it. */
+.field-feedback {
+    font-size: 0.875rem;
+    line-height: 1.4;
+    margin: 0.4rem 0 0;
+}
+
+.field-feedback.is-invalid {
+    color: #B32A35;   /* the darkened red already used for links, since
+                         #E63946 fails WCAG AA at this text size */
+}
+
+.field-hint {
+    font-size: 0.875rem;
+    color: #6B6F77;
+    margin: 0.4rem 0 0;
+}
+
+/* Radio buttons get their own fieldset because a <label> can only
+   describe one control, and this question applies to all three at once.
+   Border stripped so it still reads as a single field, not as a second
+   boxed section inside the first. */
+.choice-group {
+    border: none;
+    padding: 0;
+}
+
+.choice-group legend {
+    font-weight: 500;
+    margin-bottom: 0.5rem;
+}
+
+.choices {
+    display: flex;
+    flex-direction: column;   /* one option per row: side by side the tap
+                                 targets fall under the 44px minimum */
+    gap: 0.5rem;
+}
+
+.choice {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.6rem;
+    cursor: pointer;   /* the whole row is clickable because the input sits
+                          inside the label, not just the 16px dot */
+}
+
+.choice input {
+    width: auto;       /* undoes the width: 100% above, which suits a text
+                          box but would stretch a radio dot across the row */
+    margin-top: 0.35rem;
+    flex-shrink: 0;
+}
+
+.form-actions {
+    display: flex;
+    flex-wrap: wrap;   /* the two buttons drop onto separate rows rather
+                          than shrinking below a readable label */
+    gap: 0.75rem;
+}
+
+/* Both messages sit under the buttons, where the eye is after pressing
+   Send. flex-basis: 100% pushes each one onto its own row. */
+.form-alert,
+.form-success {
+    flex-basis: 100%;
+    font-weight: 500;
+    margin: 0;
+}
+
+/* Tells the person who pressed Send at the bottom of a long form why
+   nothing happened, without making them scroll up to find out. */
+.form-alert {
+    color: #B32A35;
+}
+
+/* Green is the one colour outside the brand three, kept for "this worked". */
+.form-success {
+    color: #2C6E49;
+}
+
+
+/* --- Buttons and links ---- */
+
+a {
+    color: #B32A35;   /* darkened from the brand red purely for contrast:
+                         #E63946 on white fails WCAG at body text size */
+}
+
+.button {
+    display: inline-block;   /* an <a> is inline and ignores vertical
+                                padding, which would flatten the button */
+    background: #E63946;
+    color: #2A2E35;          /* white on this red is 3.9:1, under the AA
+                                floor, and Oswald 1rem is not large enough
+                                for the large-text exception */
+    font-family: "Oswald", Arial, sans-serif;
+    font-size: 1rem;
+    letter-spacing: 0.03em;
+    text-decoration: none;
+    padding: 0.75rem 1.5rem;
+    border: none;
+    cursor: pointer;
+}
+
+.button:hover {
+    background: #C42F3C;
+    color: #F4F1EC;   /* the darker hover red flips which foreground wins */
+}
+
+/* Switched off for the two seconds between a good submit and the reset,
+   so a double tap cannot send the same booking twice. */
+.button:disabled,
+.button-secondary:disabled {
+    opacity: 0.55;
+    cursor: not-allowed;
+}
+
+.button:disabled:hover {
+    background: #E63946;
+    color: #2A2E35;
+}
+
+/* Reset is deliberately quieter than submit. One click wipes the whole
+   form, so it should never be the button the eye lands on first. */
+.button-secondary {
+    display: inline-block;
+    background: #FFFFFF;
+    color: #2A2E35;
+    font-family: "Oswald", Arial, sans-serif;
+    font-size: 1rem;
+    letter-spacing: 0.03em;
+    text-decoration: none;
+    padding: 0.75rem 1.5rem;
+    border: 1px solid #C9C3B9;
+    cursor: pointer;
+}
+
+.button-secondary:hover {
+    background: #F4F1EC;
+}
+
+.text-link {
+    font-weight: 500;
+}
+
+
+/* --- Contact page ---------- */
+
+/* Service area and hours sit under the page intro and above the form,
+   so a reader can check both before filling anything in. */
+.contact-info {
+    margin-top: 2.5rem;
+}
+
+
+/* --- Customer acknowledgement card --- */
+
+/* Rendered by App.vue, not by ContactForm, which is why it stays on
+   screen when the form clears itself two seconds after a submit. The
+   heavy green edge matches .form-success, so the two read as one
+   answer. */
+.ack-card {
+    margin-top: 2.5rem;
+    background: #FFFFFF;
+    border: 1px solid #D8D3CB;
+    border-left: 6px solid #2C6E49;
+    padding: 1.5rem 1.25rem;
+}
+
+.ack-card h3 {
+    font-size: 1.35rem;
+    font-weight: 600;
+    margin-bottom: 0.6rem;
+}
+
+.ack-card > p {
+    color: #4A4F58;
+}
+
+.ack-card ul {
+    list-style: none;
+    border-top: 1px solid #D8D3CB;
+    padding-top: 1rem;
+}
+
+/* Label above value on a phone; the 768px breakpoint puts them side by
+   side. */
+.ack-card li {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 0.1rem;
+    margin-bottom: 0.75rem;
+}
+
+.ack-card li strong {
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: #6B6F77;
+}
+
+.ack-card li span {
+    overflow-wrap: anywhere;   /* a long email or a 600 character symptom
+                                  would otherwise push the card wider than
+                                  the screen */
+}
+
+
+/* --- Opening hours -------- */
+
+.hours {
+    list-style: none;
+    margin-bottom: 1rem;
+}
+
+.hours li {
+    border-bottom: 1px solid #D8D3CB;
+    padding: 0.5rem 0;
+}
+
+.day {
+    display: block;   /* day and hours stack on a phone; side by side they
+                         collide once the day name is long */
+    font-weight: 500;
+}
+
+
+/* --- Footer -- */
+
+.site-footer {
+    background: #2A2E35;
+    color: #F4F1EC;
+    padding: 2rem 0;
+    font-size: 0.9rem;
+}
+
+.footer-inner {
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+}
+
+.footer-brand {
+    font-family: "Oswald", Arial, sans-serif;
+    font-size: 1.1rem;
+    margin-bottom: 0.4rem;
+}
+
+.site-footer address {
+    font-style: normal;   /* <address> is the correct element semantically
+                             but browsers italicise it by default */
+    line-height: 1.7;
+}
+
+.site-footer a {
+    color: #F4F1EC;
+}
+
+/* Secondary navigation: the same three pages as the header, so someone
+   who has read to the bottom can move on without scrolling back up. */
+.footer-nav {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+}
+
+.footer-nav a {
+    padding: 0.3rem 0;   /* taller tap target than the bare line of text */
+    text-decoration: none;
+}
+
+.footer-nav a:hover {
+    text-decoration: underline;
+}
+
+.footer-note {
+    color: #A8ACB3;
+    margin-bottom: 0;
+}
+
+
+/* ===========================================================
+   BREAKPOINT 1: 768px and up
+
+   Chosen by widening the browser until the single column stopped
+   looking deliberate and started looking empty, which happened
+   just under 800px.
+   =========================================================== */
+
+@media (min-width: 768px) {
+
+    /* Enough width now for the logo and the three links to share a
+       line, which shortens the header and lifts the hero. */
+    .header-inner {
+        flex-direction: row;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    /* Header drops to 71.6px here because the logo and nav share one
+       line, so the hero reclaims what stacking was eating. */
+    .hero {
+        min-height: calc(100vh - 72px - 6rem);
+        min-height: calc(100svh - 72px - 6rem);
+    }
+
+    .section {
+        padding: 3.5rem 0;
+    }
+
+    .cards {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 1.75rem;
+    }
+
+    /* The points go straight to three columns while the cards only
+       reach two, because a point is two lines of text and survives a
+       third of a tablet; a card carries a photo and would not. */
+    .points {
+        grid-template-columns: repeat(3, 1fr);
+        gap: 2rem;
+    }
+
+    /* Two fields per row once there is width for a rego and a car model
+       side by side. The long ones still span both columns so the radio
+       group, the textarea and the buttons keep their emphasis. */
+    .field-group {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 1.25rem 1.5rem;
+        padding: 1.75rem;
+    }
+
+    .field-wide {
+        grid-column: 1 / -1;
+    }
+
+    /* Label and value share a row here. The 11rem column is sized to the
+       longest label rather than a fraction, so the values all start at the
+       same x position instead of drifting with the text. */
+    .ack-card {
+        padding: 1.75rem;
+    }
+
+    .ack-card li {
+        grid-template-columns: 11rem 1fr;
+        gap: 1.5rem;
+        margin-bottom: 0.5rem;
+    }
+
+    .hours li {
+        display: flex;
+        justify-content: space-between;
+    }
+
+    .day {
+        display: inline;
+    }
+
+    .footer-inner {
+        flex-direction: row;
+        justify-content: space-between;
+    }
+
+    .footer-note {
+        text-align: right;
+    }
+
+}
+
+
+/* ===========================================================
+   BREAKPOINT 2: 1024px and up
+
+   The point where a photo beside its text stops being cramped.
+   Below this the image was too small to read and the paragraph
+   too narrow to scan, so both stayed stacked.
+   =========================================================== */
+
+@media (min-width: 1024px) {
+
+    .section {
+        padding: 4.5rem 0;
+    }
+
+    /* With the text capped at 30rem and anchored left, the overlay can
+       grade instead of covering evenly: dark enough to read against on
+       the left, light enough on the right to leave the two faces (the
+       reason this photo is worth using) actually visible. */
+    .hero-section {
+        background-image:
+            linear-gradient(to right,
+                rgba(42, 46, 53, 0.94) 0%,
+                rgba(42, 46, 53, 0.85) 40%,
+                rgba(42, 46, 53, 0.40) 75%,
+                rgba(42, 46, 53, 0.25) 100%),
+            url("images/hero-handshake.jpg");
+    }
+
+    /* .hero is not in this rule: it holds one child now that the photo
+       moved into the background, so there is no row to build, and
+       flex: 1 would stretch .hero-text past its 30rem cap and run the
+       headline straight across both faces. */
+    .split {
+        flex-direction: row;
+        align-items: center;
+        gap: 3rem;
+    }
+
+    /* Explicit halves rather than flex: 1. A flex-basis of 0 let the
+       photo keep its intrinsic ~1200px and left the text about 150px
+       wide, one word per line. min-width: 0 is what actually allows the
+       shrink, since flex items default to min-width: auto and refuse to
+       go below their own content size. */
+    .split > * {
+        flex: 1 1 50%;
+        min-width: 0;
+    }
+
+    /* Two text columns rather than text beside a photo, so the headings
+       line up at the top instead of each column centring on its own. */
+    .contact-info {
+        align-items: flex-start;
+    }
+
+    .cards {
+        grid-template-columns: repeat(3, 1fr);
+        gap: 2rem;
+    }
+
+}
